@@ -5,7 +5,8 @@ import ejb.LoginLocal;
 import entities.Account;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.RequestScoped;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
@@ -14,17 +15,22 @@ import org.jsoup.safety.Whitelist;
  * @author Joakim
  */
 @ManagedBean(name = "LoginBean")
-@SessionScoped
+@RequestScoped
 public class LoginBean {
     
     @EJB LoginLocal loginService;
     
+    @ManagedProperty(value="#{SettingsBean}")
+    private SettingsBean SB;
+    
     private String username;
     private String password;
-    private boolean adminMode = false;
-    private boolean loggedin = false;
+    private boolean failed = false;
     
     public String login(){
+        
+        System.out.println("USERNAME: "+getUsername());
+        System.out.println("PASSWORD: "+getPassword());
         
         String cleanUsername = Jsoup.clean(getUsername(), Whitelist.basic());
         String cleanPassword = Jsoup.clean(getPassword(), Whitelist.basic());
@@ -32,14 +38,15 @@ public class LoginBean {
         Account acc = loginService.login(cleanUsername, cleanPassword);
         
         if(acc != null){
-            loggedin = true;
+            SB.setLoggedin(true);
             if(acc.getAdminrights() == 1){
-                setAdminMode(true);
+                SB.setAdminMode(true);
             }else{
-                setAdminMode(false);
+                SB.setAdminMode(false);
             }
             return "success";
         }else{
+            setFailed(true);
             return "";
         }
         
@@ -47,14 +54,16 @@ public class LoginBean {
     
     public String addProfile(){
         
+        System.out.println("USERNAME: "+getUsername());
+        System.out.println("PASSWORD: "+getPassword());
+        
         Account acc = new Account();
         acc.setUsername(Jsoup.clean(getUsername(), Whitelist.basic()));
         acc.setCryptpass(Jsoup.clean(getPassword(), Whitelist.basic()));
         acc.setAdminrights(0);
         acc.setComputerspec("Default");
         
-        setUsername("");
-        setPassword("");
+        
         
         return loginService.addAccount(acc);
         
@@ -64,8 +73,9 @@ public class LoginBean {
         
         setUsername("");
         setPassword("");
-        setAdminMode(false);
-        setLoggedin(false);
+        SB.setAdminMode(false);
+        SB.setLoggedin(false);
+        setFailed(false);
         
         return "logout";
         
@@ -87,20 +97,20 @@ public class LoginBean {
         this.password = password;
     }
 
-    public boolean isAdminMode() {
-        return adminMode;
+    public boolean isFailed() {
+        return failed;
     }
 
-    public void setAdminMode(boolean adminCheck) {
-        this.adminMode = adminCheck;
+    public void setFailed(boolean failed) {
+        this.failed = failed;
     }
 
-    public boolean isLoggedin() {
-        return loggedin;
+    public SettingsBean getSB() {
+        return SB;
     }
 
-    public void setLoggedin(boolean loggedin) {
-        this.loggedin = loggedin;
+    public void setSB(SettingsBean SB) {
+        this.SB = SB;
     }
     
 }

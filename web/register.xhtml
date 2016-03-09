@@ -13,21 +13,24 @@
         
         <f:view>
             <h:form id="registerform">
-                <p:inputText value="#{LoginBean.username}" placeholder="Username" required="true">
-                    <p:ajax event="keyup" update="loolo"/>
+                <p:inputText value="#{LoginBean.username}" placeholder="Username" autocomplete="off" required="true">
+                    <!--p:ajax event="keyup" update="loolo"/-->
                 </p:inputText>
-                <p:outputLabel id="loolo" value="#{LoginBean.username}"/>
+                
+                <!--p:outputLabel id="loolo" value="#{LoginBean.username}"/-->
                 <br/>
-                <p:password value="#{LoginBean.password}" placeholder="Password" required="true">
-                    <p:ajax event="keyup" update="lool"/>
+                <p:password id="PasswordIn" value="#{LoginBean.password}" placeholder="Password" validator="#{ValidationBean.ValidatePassword}">
+                    <!--p:ajax event="keyup" update="lool"/-->
+                    <f:ajax event="keyup" render="gg"/>
                 </p:password>
-                <p:outputLabel id="lool" value="#{LoginBean.password}"/>
-            </h:form>
-            
-            <br/>
-            
-            <h:form>
-                <p:commandButton action="#{LoginBean.addProfile()}" value="Register" />
+                <h:message id="gg" for="PasswordIn" style="color: red"/>
+                <!--p:outputLabel id="lool" value="#{LoginBean.password}"/-->
+                
+                <br/>
+                <br/>
+                
+                <p:commandButton action="#{LoginBean.addProfile()}" value="Register"/>
+                
             </h:form>
             
         </f:view>

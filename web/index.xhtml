@@ -6,6 +6,7 @@
       xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Login</title>
+        <!--h:outputStylesheet library="css" name="styles.css"/-->
     </h:head>
     <h:body>
         
@@ -13,12 +14,13 @@
         
         <f:view>
             <h:form id="loginform">
-                <p:inputText value="#{LoginBean.username}" autocomplete="off" placeholder="Username" required="true"/>
+                <p:inputText value="#{LoginBean.username}" autocomplete="off" placeholder="Username" required="true" requiredMessage="Username is required"/>
                 <br/>
                 <p:password value="#{LoginBean.password}" placeholder="Password" required="true"/>
                 <br/>
                 <br/>
-                <p:commandButton action="#{LoginBean.login()}" value="Login" />
+                <p:commandButton action="#{LoginBean.login()}" value="Login" rendered="#{not LoginBean.failed}" update="loginform"/>
+                <p:commandButton action="#{LoginBean.login()}" value="Login" rendered="#{LoginBean.failed}" style="color: red" update="loginform"/>
             </h:form>
             
             <br/>
